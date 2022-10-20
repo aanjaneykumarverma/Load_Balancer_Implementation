@@ -1,7 +1,7 @@
-all: schedulingPolicy
+all: schedulingPolicy.out
 
-schedulingPolicy: schedulingPolicy.o Node.o VM.o Task.o parser.o
-	g++ --std=c++17 -o schedulingPolicy schedulingPolicy.o Node.o VM.o Task.o parser.o
+schedulingPolicy.out: schedulingPolicy.o Node.o VM.o Task.o parser.o
+	g++ --std=c++17 -o schedulingPolicy.out schedulingPolicy.o Node.o VM.o Task.o parser.o
 
 Node.o: Node.cpp Node.h
 	g++ --std=c++17 -c Node.cpp
