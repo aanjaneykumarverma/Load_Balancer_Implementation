@@ -20,6 +20,9 @@
 *.mod
 *.smod
 
+# Dependency directories
+node_modules/
+
 # Compiled Static libraries
 *.lai
 *.la
@@ -32,3 +35,6 @@
 
 #VSCode
 *.vscode
+
+# dotenv environment variables file
+.env
