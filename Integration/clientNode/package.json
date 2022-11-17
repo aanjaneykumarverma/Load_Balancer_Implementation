@@ -1,0 +1,24 @@
+{
+    "name": "client",
+    "version": "1.0.0",
+    "main": "client.js",
+    "scripts": {
+      "start": "node client.js",
+      "dev": "nodemon client.js",
+      "debug": "ndb client.js"
+    },
+    "author": "Akuver",
+    "license": "ISC",
+    "dependencies": {
+      "dotenv": "^9.0.2",
+      "mongoose": "^5.12.10"
+    },
+    "devDependencies": {
+      "ndb": "^1.1.5"
+    },
+    "engines": {
+      "node": "^14"
+    },
+    "description": ""
+  }
+  
