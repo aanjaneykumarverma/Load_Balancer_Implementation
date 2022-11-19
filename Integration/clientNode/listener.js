@@ -11,8 +11,9 @@ function delay(ms) {
 class Listener {
   constructor() {}
   async taskRun() {
-    const host = await factory.getOne({ ip: process.env.IP });
+    const host = await factory.getOne(Host, { ip: process.env.IP });
     const vms = await factory.getAll(VM, { host, cpu: 0.0, memory: 0.0 });
+    //console.log();
     if (vms != undefined && vms.length != 0) {
       const vm = vms[0];
       var cpu, memory;

@@ -46,6 +46,7 @@ class Scheduler {
       var V = await fetch(vmURL).then((response) => response.json());
       H = H.data.data;
       V = V.data.data;
+      console.log(H,V);
       const N = H.length;
       const M = V.length;
       for (let k = 0; k < req_queue.length; k++) {

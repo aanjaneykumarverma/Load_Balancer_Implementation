@@ -33,7 +33,7 @@
     "xss-clean": "^0.1.1"
   },
   "devDependencies": {
-    "ndb": "^1.1.5"
+    "ndb": "^0.2.4"
   },
   "engines": {
     "node": "^14"
