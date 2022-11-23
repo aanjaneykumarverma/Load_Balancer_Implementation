@@ -1,5 +1,5 @@
-const VM = require("../models/vmModel");
-const factory = require("./handlerFactory");
+const VM = require('../models/vmModel');
+const factory = require('./handlerFactory');
 
 exports.getAllVMs = factory.getAll(VM);
 exports.getVM = factory.getOne(VM);

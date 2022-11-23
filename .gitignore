@@ -38,3 +38,10 @@ node_modules/
 
 # dotenv environment variables file
 .env
+
+# Prettierrc
+.prettierrc.js
+.prettierrc
+
+# script generated txt files
+file.txt

@@ -1,13 +1,14 @@
-const mongoose = require("mongoose");
-const dotenv = require("dotenv");
+const mongoose = require('mongoose');
+const Listener = require('./listener');
+const dotenv = require('dotenv');
 
-process.on("uncaughtException", (err) => {
-  console.log("UNHANDLED REJECTION!");
+process.on('uncaughtException', (err) => {
+  console.log('UNHANDLED REJECTION!');
   console.log(err.name, err.message);
   process.exit(1);
 });
 
-dotenv.config({ path: "./.env" }); //variables should be read before app is initialized
+dotenv.config({ path: './.env' }); //variables should be read before app is initialized
 
 mongoose
   .connect(process.env.DB, {
@@ -16,4 +17,7 @@ mongoose
     useUnifiedTopology: true,
     useFindAndModify: false,
   })
-  .then(() => console.log("DB connection succesful!"));
+  .then(() => console.log('DB connection succesful!'));
+
+const listener = new Listener();
+listener.checkUsage();

@@ -1,15 +1,15 @@
-const express = require("express");
-const hostController = require("../controllers/hostController");
+const express = require('express');
+const hostController = require('../controllers/hostController');
 
 const router = express.Router();
 
 router
-  .route("/")
+  .route('/')
   .get(hostController.getAllHosts)
   .post(hostController.createHost);
 
 router
-  .route("/:id")
+  .route('/:id')
   .get(hostController.getHost)
   .patch(hostController.updateHost)
   .delete(hostController.deleteHost);

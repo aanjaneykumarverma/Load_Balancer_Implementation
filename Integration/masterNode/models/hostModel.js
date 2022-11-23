@@ -1,14 +1,14 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const hostSchema = new mongoose.Schema(
   {
     cpu: {
       type: Number,
-      required: [true, "A host must have cpu usage."],
+      required: [true, 'A host must have cpu usage.'],
     },
     memory: {
       type: Number,
-      required: [true, "A host must have memory usage."],
+      required: [true, 'A host must have memory usage.'],
     },
   },
   {
@@ -19,10 +19,10 @@ const hostSchema = new mongoose.Schema(
 
 //tourSchema.index({ price: 1, ratingsAverage: -1 });
 //tourSchema.index({ slug: 1 });
-hostSchema.virtual("VMs", {
-  ref: "VM",
-  foreignField: "host", // the connecting fields name in the review database
-  localField: "_id", // the connecting fields name in the current database
+hostSchema.virtual('VMs', {
+  ref: 'VM',
+  foreignField: 'host', // the connecting fields name in the review database
+  localField: '_id', // the connecting fields name in the current database
 });
 // DOCUMENT MIDDLEWARE, runs before .save() and .create()
 // tourSchema.pre("save", function (next) {
@@ -74,5 +74,5 @@ hostSchema.virtual("VMs", {
 //   // console.log(this.pipeline());
 //   next();
 // });
-const Host = mongoose.model("Host", hostSchema);
+const Host = mongoose.model('Host', hostSchema);
 module.exports = Host;

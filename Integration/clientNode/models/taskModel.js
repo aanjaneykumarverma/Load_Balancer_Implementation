@@ -1,18 +1,23 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const taskSchema = new mongoose.Schema(
   {
     command: {
       type: String,
-      required: [true, "A Task must have a command."],
+      required: [true, 'A Task must have a command.'],
     },
     arguments: {
       type: String,
-      default: "",
+      default: '',
+    },
+    status: {
+      type: String,
+      enum: ['New', 'Pending', 'Completed'],
+      default: 'New',
     },
     result: {
       type: String,
-      default: "Not Scheduled",
+      default: '',
     },
   },
   {
@@ -21,6 +26,6 @@ const taskSchema = new mongoose.Schema(
   }
 );
 
-const Task = mongoose.model("Task", taskSchema);
+const Task = mongoose.model('Task', taskSchema);
 
 module.exports = Task;

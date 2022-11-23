@@ -3,22 +3,22 @@
     "version": "1.0.0",
     "main": "client.js",
     "scripts": {
-      "start": "node client.js",
-      "dev": "nodemon client.js",
-      "debug": "ndb client.js"
+        "start": "node client.js",
+        "dev": "nodemon client.js",
+        "debug": "ndb client.js"
     },
     "author": "Akuver",
     "license": "ISC",
     "dependencies": {
-      "dotenv": "^9.0.2",
-      "mongoose": "^5.12.10"
+        "dotenv": "^9.0.2",
+        "mongoose": "^5.12.10",
+        "shelljs": "^0.8.5"
     },
     "devDependencies": {
-      "ndb": "^1.1.5"
+        "ndb": "^1.1.5"
     },
     "engines": {
-      "node": "^14"
+        "node": "^14"
     },
     "description": ""
-  }
-  
+}

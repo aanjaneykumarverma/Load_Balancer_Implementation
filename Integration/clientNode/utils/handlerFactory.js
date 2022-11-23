@@ -63,4 +63,3 @@ exports.deleteAll = async (Model, filter) => {
     console.error(err);
   }
 };
-Footer;

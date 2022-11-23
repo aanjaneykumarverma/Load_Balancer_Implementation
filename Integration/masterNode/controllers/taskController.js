@@ -1,5 +1,5 @@
-const Task = require("../models/taskModel");
-const factory = require("./handlerFactory");
+const Task = require('../models/taskModel');
+const factory = require('./handlerFactory');
 
 exports.getAllTasks = factory.getAll(Task);
 exports.getTask = factory.getOne(Task);

@@ -5,7 +5,7 @@ class APIFeatures {
   }
   filter() {
     const queryObj = { ...this.queryString }; // to create a copy of req.query not a reference
-    const excludedFields = ["page", "sort", "limit", "fields"];
+    const excludedFields = ['page', 'sort', 'limit', 'fields'];
     excludedFields.forEach((el) => {
       delete queryObj[el];
     });
@@ -18,19 +18,19 @@ class APIFeatures {
   }
   sort() {
     if (this.queryString.sort) {
-      const sortBy = this.queryString.sort.split(",").join(" ");
+      const sortBy = this.queryString.sort.split(',').join(' ');
       this.query = this.query.sort(sortBy);
     } else {
-      this.query = this.query.sort("-createdAt");
+      this.query = this.query.sort('-createdAt');
     }
     return this;
   }
   limitFields() {
     if (this.queryString.fields) {
-      const fields = this.queryString.fields.split(",").join(" ");
+      const fields = this.queryString.fields.split(',').join(' ');
       this.query = this.query.select(fields); // this is called projecting
     } else {
-      this.query = this.query.select("-__v"); //that - before the field excludes it
+      this.query = this.query.select('-__v'); //that - before the field excludes it
     }
     return this;
   }

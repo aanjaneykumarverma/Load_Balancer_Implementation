@@ -1,9 +1,9 @@
-const fetch = require("node-fetch");
-const Task = require("../models/taskModel");
-const Host = require("../models/hostModel");
-const VM = require("../models/vmModel");
+const fetch = require('node-fetch');
+const Task = require('../models/taskModel');
+const Host = require('../models/hostModel');
+const VM = require('../models/vmModel');
 
-const baseURL = "http://127.0.0.1:5555/api/v1/";
+const baseURL = 'http://127.0.0.1:5555/api/v1/';
 const taskURL = `${baseURL}task/?result=Not Scheduled`;
 const hostURL = `${baseURL}host/`;
 const vmURL = `${baseURL}vm/`;
@@ -46,7 +46,7 @@ class Scheduler {
       var V = await fetch(vmURL).then((response) => response.json());
       H = H.data.data;
       V = V.data.data;
-      console.log(H,V);
+      console.log(H, V);
       const N = H.length;
       const M = V.length;
       for (let k = 0; k < req_queue.length; k++) {
