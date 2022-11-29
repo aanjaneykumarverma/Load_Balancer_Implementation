@@ -43,5 +43,6 @@ node_modules/
 .prettierrc.js
 .prettierrc
 
-# script generated txt files
+# script generated files
 file.txt
+vm_pid.json
