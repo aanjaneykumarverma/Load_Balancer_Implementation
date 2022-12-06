@@ -1,4 +1,6 @@
 const fetch = require('node-fetch');
+const fs = require('fs');
+const shell = require('shelljs');
 const Task = require('../models/taskModel');
 const Host = require('../models/hostModel');
 const VM = require('../models/vmModel');
@@ -10,6 +12,17 @@ const vmURL = `${baseURL}vm/`;
 
 function delay(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function vmid(length) {
+  var result = '';
+  var characters =
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  var charactersLength = characters.length;
+  for (var i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return result;
 }
 
 class Scheduler {
@@ -87,10 +100,17 @@ class Scheduler {
           host = this.roulette_wheel(score);
         }
 
-        //createVM
-        //const newVM = await VM.create({ host: H[host], task });
-        //await Task.findOneAndUpdate({ _id: task._id }, { result: "Pending" });
-        //console.log(H[host], task._id);
+        var vmName = vmid(5);
+        var stream = fs.createWriteStream(
+          '../../rabbitmq-queue/master/runCommands.txt',
+          { flags: 'a' }
+        );
+        stream.write(`${H[host].ip} create_vm ${vmName}\n`);
+        stream.write(`${H[host].ip} run_task ${vmName}\n`);
+        stream.end();
+        shell.exec(`python3 ../../rabbitmq-queue/master/demo.py`);
+        // delete the file at the end of python program execution
+        //await Task.findOneAndUpdate({ _id: task._id }, { result: 'Pending' });
         //console.log(`Task${task} assigned to ${host}`);
       }
     }

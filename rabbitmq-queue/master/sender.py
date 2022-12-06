@@ -9,7 +9,7 @@ url = os.environ.get('amqps://yymrssjo:LlMVqA-WoqZPQjN7co2LeEQEkjmJyHOV@puffin.r
                      'amqp://guest:guest@localhost:5672/%2f')
 params = pika.URLParameters(url)
 connection = pika.BlockingConnection(params)
-queue_names = ['hello', "hello2"]
+queue_names = ['hello', "hello2"]  # ip of hosts
 requests = []
 
 dict1 = {"IP": str(IPAddr), "type": "create_vm", "vm_name": "ka"}
@@ -27,3 +27,4 @@ for i in queue_names:
 
 print(" [x] Sent 'Hello World!'")
 # connection.close()
+# IP create_vm/task_run/vm_info vm1

@@ -30,7 +30,8 @@
     "node-fetch": "^2.6.1",
     "slugify": "^1.5.3",
     "validator": "^13.6.0",
-    "xss-clean": "^0.1.1"
+    "xss-clean": "^0.1.1",
+    "shelljs": "^0.8.5"
   },
   "devDependencies": {
     "ndb": "^0.2.4"
