@@ -30,10 +30,10 @@ class Listener {
   }
   async resultCheck() {
     // this function will do the following things:
+    // get a file of the from vmname taskResult
     // 1. update task result to the result obtained from running the task on VM
     // run guest-exec-status here
-    // 2. delete the VM from running VM list
-    await factory.deleteAll(VM, { status: 'Completed' });
+    // 2. delete the VMs in the file from running VM list
     await delay(1000 * 10);
     await this.resultCheck();
   }

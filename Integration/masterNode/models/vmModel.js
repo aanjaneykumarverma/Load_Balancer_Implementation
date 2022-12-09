@@ -2,13 +2,15 @@ const mongoose = require('mongoose');
 
 const vmSchema = new mongoose.Schema(
   {
-    host: [
-      {
-        type: mongoose.Schema.ObjectId,
-        ref: 'Host',
-        required: [true, 'A VM must belong to a host.'],
-      },
-    ],
+    host: {
+      type: mongoose.Schema.ObjectId,
+      ref: 'Host',
+      required: [true, 'A VM must belong to a host.'],
+    },
+    name: {
+      type: String,
+      required: [true, 'A VM must have a name.'],
+    },
     cpu: {
       type: Number,
       default: 0.0,
@@ -17,13 +19,11 @@ const vmSchema = new mongoose.Schema(
       type: Number,
       default: 0.0,
     },
-    task: [
-      {
-        type: mongoose.Schema.ObjectId,
-        ref: 'Task',
-        required: [true, 'A VM must have a task.'],
-      },
-    ],
+    task: {
+      type: mongoose.Schema.ObjectId,
+      ref: 'Task',
+      required: [true, 'A VM must have a task.'],
+    },
   },
   {
     toJSON: { virtuals: true },
