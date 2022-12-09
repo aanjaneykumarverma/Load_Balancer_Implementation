@@ -21,11 +21,11 @@ class Listener {
       var cpu, memory;
       // run task on vm with shell script here
       var command = `'{"execute":"guest-exec", "arguments":{"path":"/usr/bin/${vm.task}","arg":["/"],"capture-output":true}}'`;
-      shell.exec(`./scripts/vmRuntask.sh ${vm.name} ${command}`);
+      shell.exec(`./scripts/vmRunTask.sh ${vm.name} ${command}`);
       // update cpu,memory from data obtained using top command
       await factory.updateOne(VM, { vm }, { cpu, memory });
     }
-    await delay(1000 * 10);
+    await delay(1000 * 5 * 60);
     await this.taskRun();
   }
   async resultCheck() {
@@ -34,7 +34,7 @@ class Listener {
     // 1. update task result to the result obtained from running the task on VM
     // run guest-exec-status here
     // 2. delete the VMs in the file from running VM list
-    await delay(1000 * 10);
+    await delay(1000 * 5 * 60);
     await this.resultCheck();
   }
   async checkUsage() {
@@ -46,7 +46,7 @@ class Listener {
     var obj = JSON.parse(fs.readFileSync('file.json', 'utf8'));
     console.log(obj);
     // iterate over list and update in DB
-    await delay(1000 * 10);
+    await delay(1000 * 5 * 60);
     await this.checkUsage();
   }
 }
