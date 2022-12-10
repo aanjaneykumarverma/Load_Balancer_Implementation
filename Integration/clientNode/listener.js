@@ -26,14 +26,13 @@ class Listener {
     await delay(1000 * 5 * 60);
     await this.taskRun();
   }
-  async resultCheck() {
+  async updateResult() {
     // this function will do the following things:
     // get a file of the from vmname taskResult
     // 1. update task result to the result obtained from running the task on VM
-    // run guest-exec-status here
     // 2. delete the VMs in the file from running VM list
     await delay(1000 * 5 * 60);
-    await this.resultCheck();
+    await this.updateResult();
   }
   async updateUsage() {
     // this function will check cpu and memory usage periodically and update it

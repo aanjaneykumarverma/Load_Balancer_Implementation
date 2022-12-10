@@ -87,4 +87,5 @@ const scheduler = new Scheduler(2);
 scheduler.setup();
 scheduler.schedule();
 scheduler.updateStats();
+scheduler.checkResult();
 module.exports = app;
