@@ -1,0 +1,6 @@
+<domstatus state='running' reason='booted' pid='6922'>
+    <vcpu id='0' pid='6931'/>
+    <vcpu id='1' pid='6932'/>
+<domstatus state='running' reason='booted' pid='7053'>
+    <vcpu id='0' pid='7062'/>
+    <vcpu id='1' pid='7063'/>

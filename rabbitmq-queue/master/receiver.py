@@ -4,9 +4,7 @@ import socket
 from subprocess import call
 import json
 import ast
-
-url = os.environ.get('amqps://yymrssjo:LlMVqA-WoqZPQjN7co2LeEQEkjmJyHOV@puffin.rmq2.cloudamqp.com/yymrssjo',
-                     'amqp://guest:guest@localhost:5672/%2f')
+url = "amqps://szvohhtx:88eua6-Vh6JHx1aEhzIStXoq-oil8GmW@puffin.rmq2.cloudamqp.com/szvohhtx"
 hostname = socket.gethostname()
 IPAddr = socket.gethostbyname(hostname)
 params = pika.URLParameters(url)
@@ -18,18 +16,18 @@ channel.queue_declare(queue='hello')
 def callback(ch, method, properties, body):
     body1 = body.decode()
     request = eval(body1)
+    # request=str(request)
+    print(type(request))
+    print(request[0])
+    print(type(request[0]))
+    dict = eval(request[0])
+    print(type(dict))
+    
+    with open("sample.json", "w") as outfile:
+        json.dump(dict, outfile)
 
-    if request["IP"] == str(IPAddr):
-        request = request["type"]
-        vm_name = request["vm_name"]
-        os.environ['vm_info'] = vm_name
-        match request:
-            case "create_vm":
-                rc = call("./vm_creation.sh")
-            case "run_task":
-                rc = call("./task_driver.sh")
 
-    print(" [x] Received " + str(body))
+    # print(" [x] Received " + str(body))
 
 
 channel.basic_consume('hello',

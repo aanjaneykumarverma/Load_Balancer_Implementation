@@ -5,8 +5,8 @@ hostname = socket.gethostname()
 IPAddr = socket.gethostbyname(hostname)
 
 # Access the CLODUAMQP_URL environment variable and parse it (fallback to localhost)
-url = os.environ.get('amqps://yymrssjo:LlMVqA-WoqZPQjN7co2LeEQEkjmJyHOV@puffin.rmq2.cloudamqp.com/yymrssjo',
-                     'amqp://guest:guest@localhost:5672/%2f')
+url ="amqps://szvohhtx:88eua6-Vh6JHx1aEhzIStXoq-oil8GmW@puffin.rmq2.cloudamqp.com/szvohhtx"
+                     
 params = pika.URLParameters(url)
 connection = pika.BlockingConnection(params)
 queue_names = ['hello', "hello2"]  # ip of hosts

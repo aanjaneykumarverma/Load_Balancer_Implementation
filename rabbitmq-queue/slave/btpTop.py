@@ -1,5 +1,13 @@
+import json
 import re
+import socket
+hostname = socket.gethostname()
 
+s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+# connect() for UDP doesn't send packets
+s.connect(('10.0.0.0', 0)) 
+IPAddr = s.getsockname()[0]
+s.close()
 
 def file_reader(file_name):
     with open(file_name) as f:
@@ -7,17 +15,16 @@ def file_reader(file_name):
         return lines
 
 
-def vm_specifications(data):
-    vm_cpu = []
-    vm_mem = []
-    vm = []
+def vm_specifications(data,pid):
     for line in data:
-        if line.find("libvirt+") != -1 and line.find("qemu-sy") != -1:
-            vm.append(line.split())
-    for i in vm:
-        vm_cpu.append(i[8])
-        vm_mem.append(i[9])
-    return vm_cpu, vm_mem
+      if line.find("libvirt+") != -1 and line.find("qemu-sy")!=-1 and line.find(pid) != -1:
+          i=line.split()
+          break
+    return i[8], i[9]
+    # for i in vm:
+    #     vm_cpu.append(i[8])
+    #     vm_mem.append(i[9])
+    
 
 
 def host_specifications(data):
@@ -28,24 +35,46 @@ def host_specifications(data):
         if line.find("MiB Mem") != -1:
             host.append(line.split())
     for i in host:
-        host_specs['Total Memory'] = i[3]
-        host_specs['Free Memory'] = i[5]
-        host_specs['Used Memory'] = i[7]
-        host_specs['Buffer Memory'] = i[9]
+        host_specs['Total Memory Usage'] = float(total_mem)
+        host_specs['CPU Usage'] = float(cpu_usage)
+        host_specs['IP']=str(IPAddr)
     return host_specs
 
+vm_pid=file_reader("name.txt")
+vm_names=file_reader("vm_name.txt")
+names=[]
+pid_list=[]
+for i in vm_pid:
+  if i.find('booted')!=-1:
+    a=i.split("'")
+    pid_list.append(a[len(a)-2])
 
+for i in vm_names:
+    names.append(i)
 data = file_reader("top.txt")
+final_dict = {}
+final_dict["VMS"]=[]
+total_mem=0
+for pid in range(len(pid_list)):
+  vm_cpu, vm_mem = vm_specifications(data,pid_list[pid])
+  vm_info={}
+  vm_info["pid"]=int(pid_list[pid])
+  vm_info["name"]=names[pid]
+  vm_info['vm_cpu'] = float(vm_cpu)
+  vm_info['vm_mem'] = float(vm_mem)
+  total_mem+=float(vm_mem)
+  final_dict["VMS"].append(vm_info)
 
 
-vm_cpu, vm_mem = vm_specifications(data)
+cpu_data=file_reader("cpu.txt")
+
+cpu_usage=float(cpu_data[0].split("%")[0])
 host_specs = host_specifications(data)
 
-final_dict = {}
-final_dict['vm_cpu'] = vm_cpu
-final_dict['vm_mem'] = vm_mem
 final_dict['host_specs'] = host_specs
 
-# convert to json -> file.json instead of file.txt
-with open('file.txt', 'w') as data:
-    data.write(str(final_dict))
+
+with open('file.txt', 'w') as outfile:
+    outfile.write(str(final_dict))
+
+

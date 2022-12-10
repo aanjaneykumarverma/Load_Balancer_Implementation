@@ -5,8 +5,7 @@ from subprocess import call
 import json
 import ast
 
-url = os.environ.get('amqps://yymrssjo:LlMVqA-WoqZPQjN7co2LeEQEkjmJyHOV@puffin.rmq2.cloudamqp.com/yymrssjo',
-                     'amqp://guest:guest@localhost:5672/%2f')
+url ="amqps://szvohhtx:88eua6-Vh6JHx1aEhzIStXoq-oil8GmW@puffin.rmq2.cloudamqp.com/szvohhtx"
 hostname = socket.gethostname()
 IPAddr = socket.gethostbyname(hostname)
 params = pika.URLParameters(url)
