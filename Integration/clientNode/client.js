@@ -20,4 +20,4 @@ mongoose
   .then(() => console.log('DB connection succesful!'));
 
 const listener = new Listener();
-listener.checkUsage();
+listener.updateUsage();

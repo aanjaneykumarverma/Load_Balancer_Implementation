@@ -3,6 +3,7 @@ const shell = require('shelljs');
 const Task = require('../models/taskModel');
 const Host = require('../models/hostModel');
 const VM = require('../models/vmModel');
+const fs = require('fs');
 
 const baseURL = 'http://127.0.0.1:5555/api/v1/';
 const taskURL = `${baseURL}task/?result=New`;
@@ -52,11 +53,11 @@ class Scheduler {
     return host - 1;
   }
   async schedule() {
-    const req_queue = await fetch(taskURL).then((response) => response.json());
+    var req_queue = await fetch(taskURL).then((response) => response.json());
     req_queue = req_queue.data.data;
     if (req_queue != undefined && req_queue.length != 0) {
-      const H = await fetch(hostURL).then((response) => response.json());
-      const V = await fetch(vmURL).then((response) => response.json());
+      var H = await fetch(hostURL).then((response) => response.json());
+      var V = await fetch(vmURL).then((response) => response.json());
       H = H.data.data;
       V = V.data.data;
       console.log(H, V);
@@ -101,29 +102,51 @@ class Scheduler {
         }
 
         var vmName = vmid(5);
-        console.log(`Task${task.command} assigned to Host ${H[host].ip}`);
+        var stream = fs.createWriteStream(
+          '../../rabbitmq-queue/master/runCommands.txt',
+          { flags: 'a' }
+        );
+        stream.write(`${H[host].ip} create_vm ${vmName}\n`);
+        stream.write(`${H[host].ip} run_task ${vmName}\n`);
+        stream.end();
+        shell.exec('python3 ../../rabbitmq-queue/master/sender.py');
         await VM.create({
           host: H[host]._id,
           task: task._id,
           name: vmid(idLength),
         });
         await Task.findByIdAndUpdate(task._id, { result: 'Pending' });
+        console.log(`Task ${task.command} assigned to Host ${H[host].ip}`);
       }
     }
-    await delay(1000 * 10);
+    await delay(1000 * 5 * 60);
     await this.schedule();
+  }
+  async setup() {
+    var H = await fetch(hostURL).then((response) => response.json());
+    var stream = fs.createWriteStream('../../rabbitmq-queue/master/ip.txt');
+    H = H.data.data;
+    const N = H.length;
+    for (let i = 0; i < N; i++) {
+      stream.write(`${H[i].ip}\n`);
+    }
+    stream.end();
+  }
+  async updateStats() {
+    var H = await fetch(hostURL).then((response) => response.json());
+    H = H.data.data;
+    const N = H.length;
+    var stream = fs.createWriteStream(
+      '../../rabbitmq-queue/master/runCommands.txt',
+      { flags: 'a' }
+    );
+    for (let i = 0; i < N; i++) {
+      stream.write(`${H[i].ip} getInfo *****\n`);
+    }
+    stream.end();
+    await delay(1000 * 5 * 60);
+    await this.checkUsage();
   }
 }
 
 module.exports = Scheduler;
-
-// RabbitMQ
-// var stream = fs.createWriteStream(
-//   '../../rabbitmq-queue/master/runCommands.txt',
-//   { flags: 'a' }
-// );
-//stream.write(`192.168.122.1 create_vm ${vmName}\n`);
-//stream.write(`192.168.122.1 run_task ${vmName}\n`);
-//stream.end();
-//shell.exec(`python3 ../../rabbitmq-queue/master/demo.py`);
-// delete the file at the end of python program execution

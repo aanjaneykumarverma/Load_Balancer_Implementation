@@ -84,5 +84,7 @@ app.all('*', (req, res, next) => {
 app.use(globalErrorHandler);
 //3) Start Server
 const scheduler = new Scheduler(2);
+scheduler.setup();
 scheduler.schedule();
+scheduler.updateStats();
 module.exports = app;

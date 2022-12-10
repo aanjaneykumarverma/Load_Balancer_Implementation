@@ -1,4 +1,5 @@
-129.43.54.11 create_vm FBNyo
-129.43.54.11 run_task FBNyo
-127.87.65.15 create_vm UiASq
-127.87.65.15 run_task UiASq
+192.168.122.1 getInfo *****
+192.168.122.1 create_vm egkqx
+192.168.122.1 run_task egkqx
+192.168.122.1 create_vm 7Gmrc
+192.168.122.1 run_task 7Gmrc

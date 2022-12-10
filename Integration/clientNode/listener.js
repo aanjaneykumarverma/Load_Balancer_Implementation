@@ -22,8 +22,6 @@ class Listener {
       // run task on vm with shell script here
       var command = `'{"execute":"guest-exec", "arguments":{"path":"/usr/bin/${vm.task}","arg":["/"],"capture-output":true}}'`;
       shell.exec(`./scripts/vmRunTask.sh ${vm.name} ${command}`);
-      // update cpu,memory from data obtained using top command
-      await factory.updateOne(VM, { vm }, { cpu, memory });
     }
     await delay(1000 * 5 * 60);
     await this.taskRun();
@@ -37,17 +35,16 @@ class Listener {
     await delay(1000 * 5 * 60);
     await this.resultCheck();
   }
-  async checkUsage() {
+  async updateUsage() {
     // this function will check cpu and memory usage periodically and update it
     // 1. update host cpu and memory usage
-    shell.exec('./scripts/vmInfo.sh');
     // 2. update all vms' cpu and memory usagw which are running on this host
     // read file.txt
     var obj = JSON.parse(fs.readFileSync('file.json', 'utf8'));
     console.log(obj);
     // iterate over list and update in DB
-    await delay(1000 * 5 * 60);
-    await this.checkUsage();
+    await delay(1000 * 1 * 60);
+    await this.updateUsage();
   }
 }
 
