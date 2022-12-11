@@ -4,9 +4,11 @@ import subprocess
 import json
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 # connect() for UDP doesn't send packets
-s.connect(('10.0.0.0', 0))
-IPAddr = s.getsockname()[0]
-s.close()
+#s.connect(('10.0.0.0', 0))
+#IPAddr = s.getsockname()[0]
+# s.close()
+
+IPAddr = "10.10.79.200"
 
 
 def file_reader(file_name):
@@ -19,7 +21,7 @@ def helper(out):
     return out.split(":")[-1].split("}")[0]
 
 
-data = file_reader("taskPID.txt")
+data = file_reader("./scripts/taskPID.txt")
 parsed_data = []
 for i in range(len(data)):
     if data[i] != "\n":
