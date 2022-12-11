@@ -43,11 +43,11 @@ for i in range(0, len(parsed_data)-1, 2):
     rc = subprocess.call("./resultCheckScript.sh")
 
     result = {}
-    result["vmName"] = vmName
+    result["vmName"] = vmName.rstrip('\n')
     data = file_reader("tasksOutput.txt")
     path = os.path.join(pwd, "tasksOutput.txt")
     os.remove(path)
-    result["output"] = data[0]
+    result["output"] = data[0].rstrip('\n')
     results["taskRes"].append(result)
 #location1 = "/media/kaushal/DATA/Load_Balancer_Implementation/Integration/clientNode/"
 location1 = os.path.abspath("clientNode")
