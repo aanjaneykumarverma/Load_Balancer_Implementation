@@ -31,6 +31,7 @@ const vmSchema = new mongoose.Schema(
   }
 );
 
-const VM = mongoose.model('VM', vmSchema);
+vmSchema.index({ host: 1, name: 1 }, { unique: true });
 
+const VM = mongoose.model('VM', vmSchema);
 module.exports = VM;

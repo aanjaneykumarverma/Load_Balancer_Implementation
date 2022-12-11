@@ -27,5 +27,7 @@ hostSchema.virtual('VMs', {
   localField: '_id', // the connecting fields name in the current database
 });
 
+hostSchema.index({ ip: 1 }, { sparse: true });
+
 const Host = mongoose.model('Host', hostSchema);
 module.exports = Host;

@@ -44,5 +44,10 @@ node_modules/
 .prettierrc
 
 # script generated files
-file.txt
 vm_pid.json
+host_info.json
+results.json
+file.txt
+name.txt
+taskPID.txt
+vm_name.txt
