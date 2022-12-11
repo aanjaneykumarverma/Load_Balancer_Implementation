@@ -109,13 +109,13 @@ class Scheduler {
         stream.write(`${H[host].ip} create_vm ${vmName}\n`);
         stream.write(`${H[host].ip} run_task ${vmName}\n`);
         stream.end();
-        //shell.exec('python3 ../../rabbitmq-queue/master/sender.py');
-        // await VM.create({
-        //   host: H[host]._id,
-        //   task: task._id,
-        //   name: vmid(idLength),
-        // });
-        // await Task.findByIdAndUpdate(task._id, { result: 'Pending' });
+        shell.exec('python3 ../../rabbitmq-queue/master/sender.py');
+        await VM.create({
+          host: H[host]._id,
+          task: task._id,
+          name: vmid(idLength),
+        });
+        await Task.findByIdAndUpdate(task._id, { result: 'Pending' });
         console.log(`Task ${task.command} assigned to Host ${H[host].ip}`);
       }
     }
@@ -144,7 +144,7 @@ class Scheduler {
       stream.write(`${H[i].ip} getInfo *****\n`);
     }
     stream.end();
-    //shell.exec('python3 ../../rabbitmq-queue/master/sender.py');
+    shell.exec('python3 ../../rabbitmq-queue/master/sender.py');
     await delay(1000 * 5 * 60);
     await this.checkUsage();
   }
@@ -160,7 +160,7 @@ class Scheduler {
       stream.write(`${H[i].ip} checkResults *****\n`);
     }
     stream.end();
-    //shell.exec('python3 ../../rabbitmq-queue/master/sender.py');
+    shell.exec('python3 ../../rabbitmq-queue/master/sender.py');
     await delay(1000 * 10 * 60);
     await this.checkResult();
   }

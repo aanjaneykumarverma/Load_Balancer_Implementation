@@ -51,3 +51,8 @@ file.txt
 name.txt
 taskPID.txt
 vm_name.txt
+ip.txt
+runCommands.txt
+
+# notebook checkpoints
+.ipynb_checkpoints

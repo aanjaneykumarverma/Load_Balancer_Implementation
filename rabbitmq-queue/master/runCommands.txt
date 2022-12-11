@@ -1,6 +1,0 @@
-192.168.122.1 getInfo *****
-192.168.122.1 checkResults *****
-192.168.122.1 create_vm lAvXD
-192.168.122.1 run_task lAvXD
-192.168.122.1 create_vm UkCpw
-192.168.122.1 run_task UkCpw
