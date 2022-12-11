@@ -4,10 +4,9 @@ import subprocess
 import json
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 # connect() for UDP doesn't send packets
-#s.connect(('10.0.0.0', 0))
-#IPAddr = s.getsockname()[0]
+# s.connect(('10.0.0.0', 0))
+# IPAddr = s.getsockname()[0]
 # s.close()
-
 IPAddr = "10.10.79.200"
 
 
@@ -28,7 +27,7 @@ for i in range(len(data)):
         parsed_data.append(data[i])
 
 # pwd="/media/kaushal/DATA/Load_Balancer_Implementation/rabbitmq-queue/slave"
-pwd = os.path.abspath("scripts")
+#pwd = os.path.abspath("scripts")
 
 tasks = {}
 results = {}
@@ -43,17 +42,14 @@ for i in range(0, len(parsed_data)-1, 2):
     command = command.replace("******", str(pid))
     os.environ['command'] = command
     rc = subprocess.call("./resultCheckScript.sh")
-
     result = {}
     result["vmName"] = vmName.rstrip('\n')
-    data = file_reader("tasksOutput.txt")
-    path = os.path.join(pwd, "tasksOutput.txt")
-    os.remove(path)
+    data = file_reader("./scripts/tasksOutput.txt")
+    # path = os.path.join(pwd, "tasksOutput.txt")
+    # os.remove(path)
     result["output"] = data[0].rstrip('\n')
     results["taskRes"].append(result)
-#location1 = "/media/kaushal/DATA/Load_Balancer_Implementation/Integration/clientNode/"
-location1 = os.path.abspath("clientNode")
-path1 = os.path.join(location1, "results.json")
-with open(path1, "w+") as outfile:
+
+with open("./scripts/results.json", "w+") as outfile:
     json.dump(results, outfile)
 print(results)

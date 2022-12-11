@@ -19,7 +19,7 @@ class Listener {
     });
     if (reqs.length != 0) {
       for (let i = 0; i < reqs.length; ++i) {
-        //shell.exec(`bash ./scripts/vm_creation.sh ${reqs[i].args}`);
+        shell.exec(`bash ./scripts/vm_creation.sh ${reqs[i].args}`);
       }
     }
     await delay(1000 * 5 * 60);
@@ -35,7 +35,7 @@ class Listener {
         const host = await Host.findOne({ ip: process.env.IP });
         const vm = await VM.findOne({ host: host._id, name: reqs[i].args });
         if (vm) {
-          //shell.exec(`bash ./scripts/task_driver.sh ${reqs[i].args}`);
+          shell.exec(`bash ./scripts/task_driver.sh ${reqs[i].args}`);
         }
       }
     }

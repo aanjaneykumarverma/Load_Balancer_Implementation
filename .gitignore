@@ -53,6 +53,8 @@ taskPID.txt
 vm_name.txt
 ip.txt
 runCommands.txt
+top.txt
+cpu.txt
 
 # notebook checkpoints
 .ipynb_checkpoints
