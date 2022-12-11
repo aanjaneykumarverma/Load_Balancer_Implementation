@@ -4,3 +4,9 @@
 <domstatus state='running' reason='booted' pid='7053'>
     <vcpu id='0' pid='7062'/>
     <vcpu id='1' pid='7063'/>
+<domstatus state='running' reason='booted' pid='80920'>
+    <vcpu id='0' pid='80931'/>
+    <vcpu id='1' pid='80932'/>
+<domstatus state='running' reason='booted' pid='81018'>
+    <vcpu id='0' pid='81027'/>
+    <vcpu id='1' pid='81028'/>
