@@ -20,4 +20,5 @@ mongoose
   .then(() => console.log('DB connection succesful!'));
 
 const listener = new Listener();
-listener.updateUsage();
+//listener.updateUsage();
+listener.updateResult();

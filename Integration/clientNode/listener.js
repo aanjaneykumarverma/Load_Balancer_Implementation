@@ -5,6 +5,7 @@ const VM = require('./models/vmModel');
 const Host = require('./models/hostModel');
 const Task = require('./models/taskModel');
 const factory = require('./utils/handlerFactory');
+const { findOneAndDelete, findOneAndUpdate } = require('./models/vmModel');
 
 dotenv.config({ path: './.env' });
 function delay(ms) {
@@ -28,20 +29,42 @@ class Listener {
   }
   async updateResult() {
     // this function will do the following things:
-    // get a file of the from vmname taskResult
     // 1. update task result to the result obtained from running the task on VM
     // 2. delete the VMs in the file from running VM list
+    var obj = JSON.parse(fs.readFileSync('results.json', 'utf8'));
+    const vmList = obj['VMS'];
+    const host = await findOne(Host, { ip: process.env.IP });
+    for (let i = 0; i < vmList.length; ++i) {
+      const curVM = vmList[i];
+      const vm = await findOne(VM, { host, name: curVM.name });
+      const taskID = vm.task;
+      await findByIdAndUpdate(Task, taskID, {
+        result: curVM.result.return['out-data'],
+      });
+      await findOneAndDelete(VM, { host, name: curVM.name });
+      // console.log(curVM.result);
+      // console.log(curVM.result.return['out-data']);
+    }
+    //const plain = Buffer.from('dXNlcm5hbWU6cGFzc3dvcmQ=', 'base64').toString('utf8')
     await delay(1000 * 5 * 60);
     await this.updateResult();
   }
   async updateUsage() {
     // this function will check cpu and memory usage periodically and update it
-    // 1. update host cpu and memory usage
-    // 2. update all vms' cpu and memory usagw which are running on this host
-    // read file.txt
-    var obj = JSON.parse(fs.readFileSync('file.json', 'utf8'));
-    console.log(obj);
-    // iterate over list and update in DB
+    const host = await findOne(Host, { ip: process.env.IP });
+    var obj = JSON.parse(fs.readFileSync('host_info.json', 'utf8'));
+    const vmList = obj['VMS'];
+    for (let i = 0; i < vmList.length; ++i) {
+      const curVM = vmList[i];
+      const vm = await findOneAndUpdate(
+        VM,
+        { host, name: curVM.name },
+        {
+          cpu: curVM.vm_cpu,
+          memory: curVM.vm_mem,
+        }
+      );
+    }
     await delay(1000 * 1 * 60);
     await this.updateUsage();
   }
