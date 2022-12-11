@@ -1,13 +1,10 @@
 const fs = require('fs');
 const shell = require('shelljs');
-const dotenv = require('dotenv');
 const VM = require('./models/vmModel');
 const Host = require('./models/hostModel');
 const Task = require('./models/taskModel');
 const factory = require('./utils/handlerFactory');
-const { findOneAndDelete, findOneAndUpdate } = require('./models/vmModel');
 
-dotenv.config({ path: './.env' });
 function delay(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
@@ -32,36 +29,44 @@ class Listener {
     // 1. update task result to the result obtained from running the task on VM
     // 2. delete the VMs in the file from running VM list
     var obj = JSON.parse(fs.readFileSync('results.json', 'utf8'));
-    const vmList = obj['VMS'];
-    const host = await findOne(Host, { ip: process.env.IP });
-    for (let i = 0; i < vmList.length; ++i) {
-      const curVM = vmList[i];
-      const vm = await findOne(VM, { host, name: curVM.name });
-      const taskID = vm.task;
-      await findByIdAndUpdate(Task, taskID, {
-        result: curVM.result.return['out-data'],
-      });
-      await findOneAndDelete(VM, { host, name: curVM.name });
-      // console.log(curVM.result);
-      // console.log(curVM.result.return['out-data']);
+    const taskResults = obj['taskRes'];
+    const N = taskResults.length;
+    const host = await Host.findOne({ ip: process.env.IP });
+    for (let i = 0; i < N; ++i) {
+      const vmName = obj['taskRes'][i].vmName;
+      const taskOutput = JSON.parse(obj['taskRes'][i].output);
+      const exitcode = taskOutput.return.exitcode;
+      if (exitcode === 0) {
+        const vm = await VM.findOne({ host: host._id, name: vmName });
+        const taskID = vm.task;
+        const result = taskOutput.return['out-data'];
+        await Task.findByIdAndUpdate(taskID, { result });
+        await VM.findByIdAndDelete(vm._id);
+        const plainTextResult = Buffer.from(`${result}`, 'base64').toString(
+          'utf8'
+        );
+      }
     }
-    //const plain = Buffer.from('dXNlcm5hbWU6cGFzc3dvcmQ=', 'base64').toString('utf8')
     await delay(1000 * 5 * 60);
     await this.updateResult();
   }
   async updateUsage() {
     // this function will check cpu and memory usage periodically and update it
-    const host = await findOne(Host, { ip: process.env.IP });
+    const host = await Host.findOne({ ip: process.env.IP });
     var obj = JSON.parse(fs.readFileSync('host_info.json', 'utf8'));
     const vmList = obj['VMS'];
+    const hostInfo = obj['host_specs'];
+    await Host.findByIdAndUpdate(host._id, {
+      cpu: Number(hostInfo['Total Memory Usage']),
+      memory: Number(hostInfo['CPU Usage']),
+    });
     for (let i = 0; i < vmList.length; ++i) {
       const curVM = vmList[i];
-      const vm = await findOneAndUpdate(
-        VM,
-        { host, name: curVM.name },
+      const vm = await VM.findOneAndUpdate(
+        { host: host._id, name: curVM.name },
         {
-          cpu: curVM.vm_cpu,
-          memory: curVM.vm_mem,
+          cpu: Number(curVM.vm_cpu),
+          memory: Number(curVM.vm_mem),
         }
       );
     }
