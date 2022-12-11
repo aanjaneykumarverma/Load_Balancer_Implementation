@@ -27,9 +27,10 @@ def callback(ch, method, properties, body):
                 rc = call("./vm_creation.sh")
             case "run_task":
                 rc = call("./task_driver.sh")
-            case "vm_info":
+            case "getInfo":
                 rc = call("./vmInfo.sh")
-
+            case "resultsCheck":
+                rc=call(['python3', 'taskResult.py'])
     print(" [x] Received " + str(body))
 
 

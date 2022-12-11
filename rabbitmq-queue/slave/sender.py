@@ -1,6 +1,7 @@
 import pika
 import os
 import socket
+import sys
 hostname = socket.gethostname()
 IPAddr = socket.gethostbyname(hostname)
 
@@ -10,8 +11,8 @@ params = pika.URLParameters(url)
 connection = pika.BlockingConnection(params)
 queue_names = ['hello', "hello2"]
 requests = []
-
-with open("file.txt") as f:
+file_name=sys.argv[1]
+with open(file_name) as f:
     lines = f.readlines()
         
 # dict1 = {"IP": str(IPAddr), "type": "create_vm", "vm_name": "ka"}

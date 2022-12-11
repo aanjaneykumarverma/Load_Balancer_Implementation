@@ -9,5 +9,3 @@ mpstat | awk '$12 ~ /[0-9.]+/ { print 100 - $12"%" }' > cpu.txt
 python3 btpTop.py
 # removing the top.txt file so that next time the information is not overwritten.
 rm top.txt cpu.txt
-
-python3 sender.py

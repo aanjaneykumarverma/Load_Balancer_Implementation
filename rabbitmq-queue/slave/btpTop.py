@@ -1,6 +1,7 @@
 import json
 import re
 import socket
+import os
 hostname = socket.gethostname()
 
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -73,8 +74,10 @@ host_specs = host_specifications(data)
 
 final_dict['host_specs'] = host_specs
 
-
-with open('file.txt', 'w') as outfile:
-    outfile.write(str(final_dict))
+location1="/media/kaushal/DATA/Load_Balancer_Implementation/Integration/clientNode/"
+path1 = os.path.join(location1, "host_info.json")
+with open(path1, "w+") as outfile:
+    json.dump(final_dict, outfile)
+print(final_dict)
 
 
