@@ -3,6 +3,7 @@ const shell = require('shelljs');
 const Task = require('../models/taskModel');
 const Host = require('../models/hostModel');
 const VM = require('../models/vmModel');
+const Requests = require('../models/requestModel');
 const fs = require('fs');
 
 const baseURL = 'http://127.0.0.1:5555/api/v1/';
@@ -109,11 +110,21 @@ class Scheduler {
         stream.write(`${H[host].ip} create_vm ${vmName}\n`);
         stream.write(`${H[host].ip} run_task ${vmName}\n`);
         stream.end();
-        shell.exec('python3 ../../rabbitmq-queue/master/sender.py');
+        //shell.exec('python3 ../../rabbitmq-queue/master/sender.py');
+        await Requests.create({
+          host: H[host].ip,
+          reqtype: 'create_vm',
+          args: vmName,
+        });
+        await Requests.create({
+          host: H[host].ip,
+          reqtype: 'run_task',
+          args: vmName,
+        });
         await VM.create({
           host: H[host]._id,
           task: task._id,
-          name: vmid(idLength),
+          name: vmName,
         });
         await Task.findByIdAndUpdate(task._id, { result: 'Pending' });
         console.log(`Task ${task.command} assigned to Host ${H[host].ip}`);
@@ -142,9 +153,14 @@ class Scheduler {
     );
     for (let i = 0; i < N; i++) {
       stream.write(`${H[i].ip} getInfo *****\n`);
+      await Requests.create({
+        host: H[i].ip,
+        reqtype: 'getInfo',
+      });
     }
     stream.end();
-    shell.exec('python3 ../../rabbitmq-queue/master/sender.py');
+    //shell.exec('python3 ../../rabbitmq-queue/master/sender.py');
+
     await delay(1000 * 5 * 60);
     await this.checkUsage();
   }
@@ -158,9 +174,14 @@ class Scheduler {
     );
     for (let i = 0; i < N; i++) {
       stream.write(`${H[i].ip} checkResults *****\n`);
+      await Requests.create({
+        host: H[i].ip,
+        reqtype: 'checkResults',
+      });
     }
     stream.end();
-    shell.exec('python3 ../../rabbitmq-queue/master/sender.py');
+
+    //shell.exec('python3 ../../rabbitmq-queue/master/sender.py');
     await delay(1000 * 10 * 60);
     await this.checkResult();
   }

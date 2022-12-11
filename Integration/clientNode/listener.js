@@ -3,6 +3,7 @@ const shell = require('shelljs');
 const VM = require('./models/vmModel');
 const Host = require('./models/hostModel');
 const Task = require('./models/taskModel');
+const Requests = require('./models/requestModel');
 const factory = require('./utils/handlerFactory');
 
 function delay(ms) {
@@ -11,15 +12,32 @@ function delay(ms) {
 
 class Listener {
   constructor() {}
+  async createVM() {
+    const reqs = await Requests.find({
+      reqtype: 'create_vm',
+      host: String(process.env.IP),
+    });
+    if (reqs.length != 0) {
+      for (let i = 0; i < reqs.length; ++i) {
+        shell.exec(`bash ./scripts/vm_creation.sh ${reqs[i].args}`);
+      }
+    }
+    await delay(1000 * 5 * 60);
+    await this.createVM();
+  }
   async taskRun() {
-    const host = await factory.getOne(Host, { ip: process.env.IP });
-    const vms = await factory.getAll(VM, { host, cpu: 0.0, memory: 0.0 });
-    if (vms != undefined && vms.length != 0) {
-      const vm = vms[0];
-      var cpu, memory;
-      // run task on vm with shell script here
-      var command = `'{"execute":"guest-exec", "arguments":{"path":"/usr/bin/${vm.task}","arg":["/"],"capture-output":true}}'`;
-      shell.exec(`./scripts/vmRunTask.sh ${vm.name} ${command}`);
+    const reqs = await Requests.find({
+      reqtype: 'run_task',
+      host: process.env.IP,
+    });
+    if (reqs.length != 0) {
+      for (let i = 0; i < reqs.length; ++i) {
+        const host = await Host.findOne({ ip: process.env.IP });
+        const vm = await VM.findOne({ host: host._id, name: reqs[i].args });
+        if (vm) {
+          shell.exec(`bash ./scripts/task_driver.sh ${reqs[i].args}`);
+        }
+      }
     }
     await delay(1000 * 5 * 60);
     await this.taskRun();
@@ -28,6 +46,7 @@ class Listener {
     // this function will do the following things:
     // 1. update task result to the result obtained from running the task on VM
     // 2. delete the VMs in the file from running VM list
+    shell.exec('python3 ./scripts/taskResult.py');
     var obj = JSON.parse(fs.readFileSync('results.json', 'utf8'));
     const taskResults = obj['taskRes'];
     const N = taskResults.length;
@@ -52,6 +71,7 @@ class Listener {
   }
   async updateUsage() {
     // this function will check cpu and memory usage periodically and update it
+    shell.exec('bash ./scripts/vmInfo.sh');
     const host = await Host.findOne({ ip: process.env.IP });
     var obj = JSON.parse(fs.readFileSync('host_info.json', 'utf8'));
     const vmList = obj['VMS'];

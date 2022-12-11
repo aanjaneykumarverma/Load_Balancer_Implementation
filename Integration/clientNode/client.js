@@ -22,3 +22,5 @@ mongoose
 const listener = new Listener();
 listener.updateUsage();
 listener.updateResult();
+listener.createVM();
+listener.taskRun();
