@@ -62,13 +62,15 @@ class Listener {
         const exitcode = taskOutput.return.exitcode;
         if (exitcode === 0) {
           const vm = await VM.findOne({ host: host._id, name: vmName });
-          const taskID = vm.task;
-          const result = taskOutput.return['out-data'];
-          await Task.findByIdAndUpdate(taskID, { result });
-          await VM.findByIdAndDelete(vm._id);
-          const plainTextResult = Buffer.from(`${result}`, 'base64').toString(
-            'utf8'
-          );
+          if (vm) {
+            const taskID = vm.task;
+            const result = taskOutput.return['out-data'];
+            await Task.findByIdAndUpdate(taskID, { result });
+            await VM.findByIdAndDelete(vm._id);
+            const plainTextResult = Buffer.from(`${result}`, 'base64').toString(
+              'utf8'
+            );
+          }
         }
       }
     }
