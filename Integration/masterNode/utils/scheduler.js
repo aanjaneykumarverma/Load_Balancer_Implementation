@@ -126,7 +126,7 @@ class Scheduler {
           task: task._id,
           name: vmName,
         });
-        await Task.findByIdAndUpdate(task._id, { result: 'Pending' });
+        await Task.findByIdAndUpdate(task._id, { status: 'Pending' });
         console.log(`Task ${task.command} assigned to Host ${H[host].ip}`);
       }
     }

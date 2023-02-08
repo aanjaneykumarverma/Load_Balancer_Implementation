@@ -65,7 +65,10 @@ class Listener {
           if (vm) {
             const taskID = vm.task;
             const result = taskOutput.return['out-data'];
-            await Task.findByIdAndUpdate(taskID, { result });
+            await Task.findByIdAndUpdate(taskID, {
+              result,
+              status: 'Completed',
+            });
             await VM.findByIdAndDelete(vm._id);
             const plainTextResult = Buffer.from(`${result}`, 'base64').toString(
               'utf8'
