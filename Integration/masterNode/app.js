@@ -15,7 +15,7 @@ const globalErrorHandler = require('./controllers/errorController');
 const hostRouter = require('./routes/hostRoutes');
 const vmRouter = require('./routes/vmRoutes');
 const taskRouter = require('./routes/taskRoutes');
-const Scheduler = require('./utils/scheduler');
+const ResultScheduler = require('./utils/resultScheduler');
 
 const app = express();
 
@@ -57,17 +57,13 @@ app.use(
 );
 
 app.use(compression());
-// Serving static files
-//app.use(express.static(`${__dirname}/public`));
 
 app.use((req, res, next) => {
   req.requestTime = new Date().toISOString();
   next();
 });
 
-//2)Routes
-
-//app.use("/", hostRouter);
+//2) Routes
 app.use('/api/v1/host', hostRouter);
 app.use('/api/v1/vm', vmRouter);
 app.use('/api/v1/task', taskRouter);
@@ -82,10 +78,9 @@ app.all('*', (req, res, next) => {
 
 // ERROR HANDLING MIDDLEWARE
 app.use(globalErrorHandler);
-//3) Start Server
-const scheduler = new Scheduler(2);
-scheduler.setup();
+
+//3) Start Scheduling
+const scheduler = new ResultScheduler('ROUND_ROBIN');
 scheduler.schedule();
-scheduler.updateStats();
-scheduler.checkResult();
+scheduler.cleanUpVMs();
 module.exports = app;

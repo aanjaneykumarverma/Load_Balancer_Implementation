@@ -18,6 +18,19 @@ const taskSchema = new mongoose.Schema({
     type: String,
     default: '',
   },
+  taskCreatedAt: {
+    type: Date,
+    default: Date.now(),
+  },
+  taskStartedAt: {
+    type: Date,
+  },
+  taskReceivedAt: {
+    type: Date,
+  },
+  taskFinishedAt: {
+    type: Date,
+  },
 });
 
 const Task = mongoose.model('Task', taskSchema);

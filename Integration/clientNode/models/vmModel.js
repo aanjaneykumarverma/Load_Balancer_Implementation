@@ -22,7 +22,10 @@ const vmSchema = new mongoose.Schema(
     task: {
       type: mongoose.Schema.ObjectId,
       ref: 'Task',
-      required: [true, 'A VM must have a task.'],
+    },
+    inUse: {
+      type: Boolean,
+      default: false,
     },
   },
   {
