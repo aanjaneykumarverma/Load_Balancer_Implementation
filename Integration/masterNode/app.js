@@ -80,7 +80,8 @@ app.all('*', (req, res, next) => {
 app.use(globalErrorHandler);
 
 //3) Start Scheduling
-const scheduler = new ResultScheduler('ROUND_ROBIN');
+const scheduler = new ResultScheduler('PROBABILISTIC_SCHEDULING');
+//scheduler.foo();
 scheduler.schedule();
 scheduler.cleanUpVMs();
 module.exports = app;

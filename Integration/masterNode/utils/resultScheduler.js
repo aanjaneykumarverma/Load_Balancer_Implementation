@@ -1,26 +1,66 @@
 const HostVM = require('../models/hostVMModel');
 const VM = require('../models/vmModel');
 const Task = require('../models/taskModel');
+const Host = require('../models/hostModel');
 
-const baseURL = 'http://127.0.0.1:5555/api/v1/';
-const taskURL = `${baseURL}task/?result=New`;
-const hostURL = `${baseURL}host/`;
-const vmURL = `${baseURL}vm/`;
 var i = 0;
 var j = 0;
+
 function delay(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+function resourceAtIndex(vm, index) {
+  switch (index) {
+    case 0:
+      return vm.cpu;
+    case 1:
+      return vm.memory;
+    default:
+      return null;
+  }
+}
+
 class ResultScheduler {
-  constructor(policy) {
+  constructor(policy, p = 2) {
     this.policy = policy;
+    this.p = p;
+  }
+  async foo() {
+    await HostVM.create({
+      host: '637614718a6eac3f3eb0649f',
+      vm: '6396e3e15a182220b3f6982c',
+    });
+    await HostVM.create({
+      host: '637614718a6eac3f3eb0649f',
+      vm: '6396e3e25a182220b3f69833',
+    });
+  }
+  roulette_wheel(score) {
+    var N = score.length;
+    var sum = 0.0;
+    for (let i = 0; i < N; i++) {
+      sum += score[i][0];
+    }
+    var P = new Array(N).fill(0.0);
+    var PP = new Array(N + 1).fill(0.0);
+    for (let i = 0; i < N; i++) {
+      P[i] = score[i][0] / sum;
+      PP[i + 1] = PP[i] + P[i];
+    }
+    const random_num = Math.random();
+    var host = -1;
+    for (let i = 1; i <= N; i++) {
+      if (PP[i - 1] <= random_num && random_num < PP[i]) {
+        host = i;
+        break;
+      }
+    }
+    return host - 1;
   }
   async roundRobin() {
-    var req_queue = await fetch(taskURL).then((response) => response.json());
-    var H = await fetch(hostURL).then((response) => response.json());
-    req_queue = req_queue.data.data;
-    H = H.data.data;
+    var req_queue = await Task.find({ status: 'New' });
+    var H = await Host.find();
     const N = H.length;
     while (req_queue != undefined && req_queue.length != 0) {
       var task = req_queue.shift();
@@ -41,19 +81,13 @@ class ResultScheduler {
     await this.roundRobin();
   }
   async weightedRoundRobin() {
-    var req_queue = await fetch(taskURL).then((response) => response.json());
-    var H = await fetch(hostURL).then((response) => response.json());
-    req_queue = req_queue.data.data;
-    H = H.data.data;
+    var req_queue = await Task.find({ status: 'New' });
+    var H = await Host.find();
     const N = H.length;
     // cpu+memory = weight for host
     H.sort(function (a, b) {
-      if (a.cpu + a.memory >= b.cpu + b.memory) {
-        return 1;
-      }
-      return 0;
+      return a.cpu + a.memory - b.cpu - b.memory;
     });
-
     while (req_queue != undefined && req_queue.length != 0) {
       var task = req_queue.shift();
       await Task.findByIdAndUpdate(task._id, { status: 'Pending' });
@@ -73,17 +107,15 @@ class ResultScheduler {
     await this.weightedRoundRobin();
   }
   async probabilisticScheduling() {
-    var req_queue = await fetch(taskURL).then((response) => response.json());
-    req_queue = req_queue.data.data;
+    var req_queue = await Task.find({ status: 'New' });
     if (req_queue != undefined && req_queue.length != 0) {
-      var H = await fetch(hostURL).then((response) => response.json());
+      var H = await Host.find();
       var V = await VM.find({ inUse: true });
-      H = H.data.data;
-      V = V.data.data;
       const N = H.length;
       const M = V.length;
-      for (let k = 0; k < req_queue.length; k++) {
-        const task = req_queue[k];
+      while (req_queue.length != 0) {
+        const currentLength = req_queue.length;
+        const task = req_queue.shift();
         var w = new Array(this.p).fill(0.0);
         var score = new Array(N).fill([]);
         var totsumo = 0.0;
@@ -94,7 +126,7 @@ class ResultScheduler {
             var sumoj = 0.0;
             for (let j = 0; j < M; j++) {
               const vm = V[j];
-              sumoj += V[j][i];
+              sumoj += resourceAtIndex(V[j], i);
             }
             totsumo += sumoj;
             w[i] = sumoj;
@@ -113,9 +145,9 @@ class ResultScheduler {
           }
         }
         var host;
-        if (req_queue.length === 1) {
+        if (currentLength === 1) {
           score = score.sort().reverse();
-          host = score[0][0];
+          host = score[0][1];
         } else {
           host = this.roulette_wheel(score);
         }
@@ -135,7 +167,7 @@ class ResultScheduler {
     await this.probabilisticScheduling();
   }
 
-  schedule() {
+  async schedule() {
     switch (this.policy) {
       case 'ROUND_ROBIN':
         this.roundRobin();
@@ -147,7 +179,8 @@ class ResultScheduler {
         this.probabilisticScheduling();
         break;
       default:
-        console.log('INVALID POLICY!!!');
+        console.error('Error: ', 'INVALID POLICY!!!');
+        process.exit(1);
     }
   }
   async cleanUpVMs() {
