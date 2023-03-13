@@ -2,10 +2,10 @@ const HostVM = require('../models/hostVMModel');
 const VM = require('../models/vmModel');
 const Task = require('../models/taskModel');
 const Host = require('../models/hostModel');
+const Requests = require('../models/requestModel');
 
 var i = 0;
 var j = 0;
-
 function delay(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
@@ -73,6 +73,11 @@ class ResultScheduler {
       await HostVM.findByIdAndDelete(freeVM._id);
       i++;
       i %= N;
+      await Requests.create({
+        host: H[i].ip,
+        reqtype: 'run_task',
+        args: vmName,
+      });
       console.log(
         `Task ${task.command} assigned to Host ${i} at ip:${H[i].ip}`
       );
@@ -99,8 +104,13 @@ class ResultScheduler {
       await HostVM.findByIdAndDelete(freeVM._id);
       j++;
       j %= N;
+      await Requests.create({
+        host: H[j].ip,
+        reqtype: 'run_task',
+        args: vmName,
+      });
       console.log(
-        `Task ${task.command} assigned to Host ${i} at ip:${H[i].ip}`
+        `Task ${task.command} assigned to Host ${j} at ip:${H[j].ip}`
       );
     }
     await delay(1000 * 5 * 60);
@@ -158,6 +168,11 @@ class ResultScheduler {
           inUse: true,
         });
         await HostVM.findByIdAndDelete(freeVM._id);
+        await Requests.create({
+          host: H[host].ip,
+          reqtype: 'run_task',
+          args: vmName,
+        });
         console.log(
           `Task ${task.command} assigned to Host ${host} at ip:${H[host].ip}`
         );
@@ -196,6 +211,30 @@ class ResultScheduler {
     }
     await delay(1000 * 5 * 60);
     this.cleanUpVMs();
+  }
+  async updateStats() {
+    var H = await Host.find();
+    const N = H.length;
+    for (let i = 0; i < N; i++) {
+      await Requests.create({
+        host: H[i].ip,
+        reqtype: 'getInfo',
+      });
+    }
+    await delay(1000 * 1 * 60);
+    await this.checkUsage();
+  }
+  async checkResult() {
+    var H = await Host.find();
+    const N = H.length;
+    for (let i = 0; i < N; i++) {
+      await Requests.create({
+        host: H[i].ip,
+        reqtype: 'checkResults',
+      });
+    }
+    await delay(1000 * 10 * 60);
+    await this.checkResult();
   }
 }
 

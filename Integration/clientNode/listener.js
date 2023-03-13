@@ -4,7 +4,7 @@ const VM = require('./models/vmModel');
 const Host = require('./models/hostModel');
 const Task = require('./models/taskModel');
 const Requests = require('./models/requestModel');
-const factory = require('./utils/handlerFactory');
+const HostVM = require('./models/hostVMModel');
 
 function delay(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -37,16 +37,24 @@ class Listener {
         if (vm) {
           shell.exec(`bash ./scripts/task_driver.sh ${reqs[i].args}`);
         }
+        await Requests.findByIdAndDelete(reqs[i]._id);
       }
     }
     await delay(1000 * 5 * 60);
     await this.taskRun();
   }
   async updateResult() {
-    // this function will do the following things:
-    // 1. update task result to the result obtained from running the task on VM
-    // 2. delete the VMs in the file from running VM list
+    /**
+     * This function does the following:
+     * 1. update task result to the result obtained from running the task on VM
+     * 2. set the inUse field of VMs in the file from running VM list to false
+     * 3. add the freeVM in HostVM collection
+     **/
     const reqs = await Requests.find({
+      reqtype: 'checkResults',
+      host: String(process.env.IP),
+    });
+    await Requests.deleteMany({
       reqtype: 'checkResults',
       host: String(process.env.IP),
     });
@@ -69,20 +77,24 @@ class Listener {
               result,
               status: 'Completed',
             });
-            await VM.findByIdAndDelete(vm._id);
-            const plainTextResult = Buffer.from(`${result}`, 'base64').toString(
-              'utf8'
-            );
+            await VM.findByIdAndUpdate(vm._id, { inUse: false });
+            await HostVM.create({ host: host._id, vm: vm._id });
           }
         }
       }
     }
-    await delay(1000 * 5 * 60);
+    await delay(1000 * 10 * 60);
     await this.updateResult();
   }
   async updateUsage() {
-    // this function will check cpu and memory usage periodically and update it
+    /**
+     * This function checks cpu and memory usage periodically and updates it.
+     **/
     const reqs = await Requests.find({
+      reqtype: 'getInfo',
+      host: String(process.env.IP),
+    });
+    await Requests.deleteMany({
       reqtype: 'getInfo',
       host: String(process.env.IP),
     });
