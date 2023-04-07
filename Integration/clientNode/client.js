@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const Listener = require('./listener');
 const dotenv = require('dotenv');
+const SetupDatabase = require('./setupDatabase');
 
 process.on('uncaughtException', (err) => {
   console.log('UNHANDLED REJECTION!');
@@ -20,7 +21,8 @@ mongoose
   .then(() => console.log('DB connection succesful!'));
 
 const listener = new Listener();
+const setupDatabase = new SetupDatabase();
+setupDatabase.setup();
 listener.updateUsage();
 listener.updateResult();
-listener.createVM();
 listener.taskRun();

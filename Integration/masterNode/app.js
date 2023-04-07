@@ -16,6 +16,7 @@ const hostRouter = require('./routes/hostRoutes');
 const vmRouter = require('./routes/vmRoutes');
 const taskRouter = require('./routes/taskRoutes');
 const ResultScheduler = require('./utils/resultScheduler');
+const SetupLoads = require('./taskCreation/setupLoads');
 
 const app = express();
 
@@ -81,7 +82,9 @@ app.use(globalErrorHandler);
 
 //3) Start Scheduling
 const scheduler = new ResultScheduler('PROBABILISTIC_SCHEDULING');
+const setupLoads = new SetupLoads();
+setupLoads.setupLoads();
 //scheduler.foo();
-scheduler.schedule();
-scheduler.cleanUpVMs();
+// scheduler.schedule();
+// scheduler.cleanUpVMs();
 module.exports = app;
