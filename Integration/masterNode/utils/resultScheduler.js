@@ -26,16 +26,6 @@ class ResultScheduler {
     this.policy = policy;
     this.p = p;
   }
-  async foo() {
-    await HostVM.create({
-      host: '637614718a6eac3f3eb0649f',
-      vm: '6396e3e15a182220b3f6982c',
-    });
-    await HostVM.create({
-      host: '637614718a6eac3f3eb0649f',
-      vm: '6396e3e25a182220b3f69833',
-    });
-  }
   roulette_wheel(score) {
     var N = score.length;
     var sum = 0.0;

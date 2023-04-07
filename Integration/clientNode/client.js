@@ -22,7 +22,7 @@ mongoose
 
 const listener = new Listener();
 const setupDatabase = new SetupDatabase();
-setupDatabase.setup();
+await setupDatabase.setup();
 listener.updateUsage();
 listener.updateResult();
 listener.taskRun();
