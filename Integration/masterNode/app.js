@@ -83,7 +83,7 @@ app.use(globalErrorHandler);
 //3) Start Scheduling
 const scheduler = new ResultScheduler('PROBABILISTIC_SCHEDULING');
 const setupLoads = new SetupLoads();
-setupLoads.setupLoads();
+await setupLoads.setupLoads();
 scheduler.schedule();
 scheduler.cleanUpVMs();
 module.exports = app;
