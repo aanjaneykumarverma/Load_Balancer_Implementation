@@ -55,6 +55,7 @@ ip.txt
 runCommands.txt
 top.txt
 cpu.txt
+load.txt
 
 # notebook checkpoints
 .ipynb_checkpoints
