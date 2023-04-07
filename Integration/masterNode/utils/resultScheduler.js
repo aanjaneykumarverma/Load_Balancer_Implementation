@@ -10,6 +10,19 @@ function delay(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+function taskCommandBuilder(vmId, fileName) {
+  const command = {
+    execute: 'guest-exec',
+    arguments: {
+      path: `${fileName}`,
+      arg: [`${vmId}`],
+      'capture-output': true,
+    },
+  };
+  const commandString = JSON.stringify(command);
+  return commandString;
+}
+
 function resourceAtIndex(vm, index) {
   switch (index) {
     case 0:
@@ -66,8 +79,9 @@ class ResultScheduler {
       await Requests.create({
         host: H[i].ip,
         reqtype: 'run_task',
-        args: vmName,
+        args: `${vmName} ${taskCommandBuilder(freeVM.vm._id, task.command)}`,
       });
+      await Task.findByIdAndUpdate(task._id, { taskScheduledAt: Date.now() });
       console.log(
         `Task ${task.command} assigned to Host ${i} at ip:${H[i].ip}`
       );
@@ -97,8 +111,9 @@ class ResultScheduler {
       await Requests.create({
         host: H[j].ip,
         reqtype: 'run_task',
-        args: vmName,
+        args: `${vmName} ${taskCommandBuilder(freeVM.vm._id, task.command)}`,
       });
+      await Task.findByIdAndUpdate(task._id, { taskScheduledAt: Date.now() });
       console.log(
         `Task ${task.command} assigned to Host ${j} at ip:${H[j].ip}`
       );
@@ -161,8 +176,9 @@ class ResultScheduler {
         await Requests.create({
           host: H[host].ip,
           reqtype: 'run_task',
-          args: vmName,
+          args: `${vmName} ${taskCommandBuilder(freeVM.vm._id, task.command)}`,
         });
+        await Task.findByIdAndUpdate(task._id, { taskScheduledAt: Date.now() });
         console.log(
           `Task ${task.command} assigned to Host ${host} at ip:${H[host].ip}`
         );

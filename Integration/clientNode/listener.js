@@ -36,6 +36,7 @@ class Listener {
         const vm = await VM.findOne({ host: host._id, name: reqs[i].args });
         if (vm) {
           shell.exec(`bash ./scripts/task_driver.sh ${reqs[i].args}`);
+          await Task.findByIdAndUpdate(vm.task, { taskReceivedAt: Date.now() });
         }
         await Requests.findByIdAndDelete(reqs[i]._id);
       }
