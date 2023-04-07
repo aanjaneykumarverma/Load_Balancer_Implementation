@@ -10,7 +10,7 @@ function delay(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-function taskCommandBuilder(vmId, fileName) {
+module.exports = function taskCommandBuilder(vmId, fileName) {
   const command = {
     execute: 'guest-exec',
     arguments: {
@@ -21,7 +21,7 @@ function taskCommandBuilder(vmId, fileName) {
   };
   const commandString = JSON.stringify(command);
   return commandString;
-}
+};
 
 function resourceAtIndex(vm, index) {
   switch (index) {
