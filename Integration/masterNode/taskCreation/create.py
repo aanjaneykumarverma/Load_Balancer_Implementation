@@ -38,7 +38,7 @@ if __name__ == "__main__":
     for key in res.keys():
         load_list += [key]*res[key]
 
-    with open('load.txt', 'w') as f:
+    with open('./taskCreation/load.txt', 'w') as f:
         for load in load_list:
             f.write(load)
             f.write('\n')

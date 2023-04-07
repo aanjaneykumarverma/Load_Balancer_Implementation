@@ -1,6 +1,6 @@
 const fs = require('fs');
 const shell = require('shelljs');
-const Task = require('./models/taskModel');
+const Task = require('../models/taskModel');
 
 class SetupLoads {
   async setupLoads() {
