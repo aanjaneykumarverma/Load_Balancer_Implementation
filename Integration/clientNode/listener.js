@@ -59,9 +59,9 @@ class Listener {
       reqtype: 'checkResults',
       host: String(process.env.IP),
     });
-    if (fs.existsSync('taskPID.txt') && reqs.length != 0) {
+    if (fs.existsSync('./scripts/taskPID.txt') && reqs.length != 0) {
       shell.exec('python3 ./scripts/taskResult.py');
-      var obj = JSON.parse(fs.readFileSync('results.json', 'utf8'));
+      var obj = JSON.parse(fs.readFileSync('./scripts/results.json', 'utf8'));
       const taskResults = obj['taskRes'];
       const N = taskResults.length;
       const host = await Host.findOne({ ip: process.env.IP });
@@ -74,9 +74,13 @@ class Listener {
           if (vm) {
             const taskID = vm.task;
             const result = taskOutput.return['out-data'];
+            const taskStartedAt = obj['taskRes'][i].taskStartedAt;
+            const taskFinishedAt = obj['taskRes'][i].taskFinishedAt;
             await Task.findByIdAndUpdate(taskID, {
               result,
               status: 'Completed',
+              taskStartedAt,
+              taskFinishedAt,
             });
             await VM.findByIdAndUpdate(vm._id, { inUse: false });
             await HostVM.create({ host: host._id, vm: vm._id });
