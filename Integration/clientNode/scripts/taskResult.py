@@ -1,13 +1,11 @@
-import socket
 import os
 import subprocess
 import json
-s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-# connect() for UDP doesn't send packets
-# s.connect(('10.0.0.0', 0))
-# IPAddr = s.getsockname()[0]
-# s.close()
-IPAddr = "10.10.79.200"
+import base64
+from dotenv import load_dotenv
+
+load_dotenv()
+IP = os.getenv('IP')
 
 
 def file_reader(file_name):
@@ -26,9 +24,6 @@ for i in range(len(data)):
     if data[i] != "\n":
         parsed_data.append(data[i])
 
-# pwd="/media/kaushal/DATA/Load_Balancer_Implementation/rabbitmq-queue/slave"
-#pwd = os.path.abspath("scripts")
-
 tasks = {}
 results = {}
 results["taskRes"] = []
@@ -41,14 +36,32 @@ for i in range(0, len(parsed_data)-1, 2):
     os.environ['pid'] = pid
     command = command.replace("******", str(pid))
     os.environ['command'] = command
-    rc = subprocess.call("./resultCheckScript.sh")
+    print(vmName, command, pid)
+    rc = subprocess.call("./scripts/resultCheckScript.sh")
     result = {}
     result["vmName"] = vmName.rstrip('\n')
     data = file_reader("./scripts/tasksOutput.txt")
-    # path = os.path.join(pwd, "tasksOutput.txt")
-    # os.remove(path)
+    print(data)
+    output = data[0].rstrip('\n')
+    output = output[10:]
+    output = output[:-2]
+    try:
+        out = json.loads(output)
+    except:
+        output = output+"}"
+        out = json.loads(output)
+    a = out["out-data"]
+    base64_message = a
+    base64_bytes = base64_message.encode('ascii')
+    message_bytes = base64.b64decode(base64_bytes)
+    message = message_bytes.decode('ascii')
+    output = message.split("\n")
+    starting_time = output[0].split(" at ")[1]
+    ending_time = output[1].split(" at ")[1]
     result["output"] = data[0].rstrip('\n')
     results["taskRes"].append(result)
+    results["taskStartedAt"] = starting_time
+    results["taskFinishedAt"] = ending_time
 
 with open("./scripts/results.json", "w+") as outfile:
     json.dump(results, outfile)
