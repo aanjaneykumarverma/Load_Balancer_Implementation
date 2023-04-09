@@ -59,9 +59,10 @@ for i in range(0, len(parsed_data)-1, 2):
     starting_time = output[0].split(" at ")[1]
     ending_time = output[1].split(" at ")[1]
     result["output"] = data[0].rstrip('\n')
+    result["taskStartedAt"] = starting_time
+    result["taskFinishedAt"] = ending_time
     results["taskRes"].append(result)
-    results["taskStartedAt"] = starting_time
-    results["taskFinishedAt"] = ending_time
+
 
 with open("./scripts/results.json", "w+") as outfile:
     json.dump(results, outfile)
