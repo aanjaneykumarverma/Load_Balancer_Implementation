@@ -19,7 +19,7 @@ class SetupDatabase {
      **/
     console.info('Database is being set up.');
     for (let i = 0; i < 10; ++i) {
-      shell.exec(`bash ./scripts/vm_creation.sh vm${i + 1}`);
+      shell.exec(`bash ./scripts/vm_creation.sh vm${i + 1} ${process.env.ISOPATH}`);
     }
     shell.exec('bash ./scripts/vmInfo.sh');
     const obj = JSON.parse(fs.readFileSync('./scripts/host_info.json', 'utf8'));
