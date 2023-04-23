@@ -60,7 +60,7 @@ for pid in range(len(pid_list)):
     vm_info["name"] = names[pid]
     vm_info['vm_cpu'] = float(vm_cpu)
     vm_info['vm_mem'] = float(vm_mem)
-    total_mem += float(vm_mem)
+    total_mem += float(vm_mem)  # total_mem ko max of vm_mem define kr dena bro. Add mat krna vm_mems ko
     final_dict["VMS"].append(vm_info)
 
 
