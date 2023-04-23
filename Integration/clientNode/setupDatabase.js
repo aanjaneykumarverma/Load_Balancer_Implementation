@@ -2,6 +2,7 @@ const fs = require('fs');
 const shell = require('shelljs');
 const dotenv = require('dotenv');
 const Host = require('./models/hostModel');
+const VM = require('./models/vmModel');
 const HostVM = require('./models/hostVMModel');
 
 dotenv.config({ path: './.env' });
@@ -18,9 +19,9 @@ class SetupDatabase {
      * All vms inside hostvms table are free and not running any tasks.
      **/
     console.info('Database is being set up.');
-    for (let i = 0; i < 10; ++i) {
-      shell.exec(`bash ./scripts/vm_creation.sh vm${i + 1} ${process.env.ISOPATH}`);
-    }
+    // for (let i = 0; i < 10; ++i) {
+    //   shell.exec(`bash ./scripts/vm_creation.sh vm${i + 1} ${process.env.ISOPATH}`);
+    // }
     shell.exec('bash ./scripts/vmInfo.sh');
     const obj = JSON.parse(fs.readFileSync('./scripts/host_info.json', 'utf8'));
     const vmList = obj['VMS'];
@@ -33,8 +34,8 @@ class SetupDatabase {
     for (let i = 0; i < vmList.length; ++i) {
       const curVM = vmList[i];
       const vm = await VM.create(
-        { host: host._id, name: curVM.name },
-        {
+        { host: host._id, 
+          name: curVM.name ,
           cpu: Number(curVM.vm_cpu),
           memory: Number(curVM.vm_mem),
         }
