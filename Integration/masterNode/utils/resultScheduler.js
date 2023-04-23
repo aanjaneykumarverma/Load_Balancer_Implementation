@@ -67,24 +67,28 @@ class ResultScheduler {
     const N = H.length;
     while (req_queue != undefined && req_queue.length != 0) {
       var task = req_queue.shift();
-      await Task.findByIdAndUpdate(task._id, { status: 'Pending' });
       var freeVM = await HostVM.findOne({ host: H[i]._id });
-      await VM.findByIdAndUpdate(freeVM.vm._id, {
-        task: task._id,
-        inUse: true,
-      });
-      await HostVM.findByIdAndDelete(freeVM._id);
-      i++;
-      i %= N;
-      await Requests.create({
-        host: H[i].ip,
-        reqtype: 'run_task',
-        args: `${vmName} ${taskCommandBuilder(freeVM.vm._id, task.command)}`,
-      });
-      await Task.findByIdAndUpdate(task._id, { taskScheduledAt: Date.now() });
-      console.log(
-        `Task ${task.command} assigned to Host ${i} at ip:${H[i].ip}`
-      );
+      if (freeVM != undefined) {
+        await Task.findByIdAndUpdate(task._id, { status: 'Pending' });
+        await VM.findByIdAndUpdate(freeVM.vm, {
+          task: task._id,
+          inUse: true,
+        });
+        await HostVM.findByIdAndDelete(freeVM._id);
+        i++;
+        i %= N;
+        const vm = await VM.findById(freeVM.vm);
+        const vmName = vm.name;
+        await Requests.create({
+          host: H[i].ip,
+          reqtype: 'run_task',
+          args: `${vmName} ${taskCommandBuilder(freeVM.vm, task.command)}`,
+        });
+        await Task.findByIdAndUpdate(task._id, { taskScheduledAt: Date.now() });
+        console.log(
+          `Task ${task.command} assigned to Host ${i} at ip:${H[i].ip}`
+        );
+      }
     }
     await delay(1000 * 5 * 60);
     await this.roundRobin();
@@ -99,24 +103,28 @@ class ResultScheduler {
     });
     while (req_queue != undefined && req_queue.length != 0) {
       var task = req_queue.shift();
-      await Task.findByIdAndUpdate(task._id, { status: 'Pending' });
       var freeVM = await HostVM.findOne({ host: H[j]._id });
-      await VM.findByIdAndUpdate(freeVM.vm._id, {
-        task: task._id,
-        inUse: true,
-      });
-      await HostVM.findByIdAndDelete(freeVM._id);
-      j++;
-      j %= N;
-      await Requests.create({
-        host: H[j].ip,
-        reqtype: 'run_task',
-        args: `${vmName} ${taskCommandBuilder(freeVM.vm._id, task.command)}`,
-      });
-      await Task.findByIdAndUpdate(task._id, { taskScheduledAt: Date.now() });
-      console.log(
-        `Task ${task.command} assigned to Host ${j} at ip:${H[j].ip}`
-      );
+      if (freeVM != undefined) {
+        await Task.findByIdAndUpdate(task._id, { status: 'Pending' });
+        await VM.findByIdAndUpdate(freeVM.vm, {
+          task: task._id,
+          inUse: true,
+        });
+        await HostVM.findByIdAndDelete(freeVM._id);
+        j++;
+        j %= N;
+        const vm = await VM.findById(freeVM.vm);
+        const vmName = vm.name;
+        await Requests.create({
+          host: H[j].ip,
+          reqtype: 'run_task',
+          args: `${vmName} ${taskCommandBuilder(freeVM.vm, task.command)}`,
+        });
+        await Task.findByIdAndUpdate(task._id, { taskScheduledAt: Date.now() });
+        console.log(
+          `Task ${task.command} assigned to Host ${j} at ip:${H[j].ip}`
+        );
+      }
     }
     await delay(1000 * 5 * 60);
     await this.weightedRoundRobin();
@@ -166,22 +174,28 @@ class ResultScheduler {
         } else {
           host = this.roulette_wheel(score);
         }
-        await Task.findByIdAndUpdate(task._id, { status: 'Pending' });
         var freeVM = await HostVM.findOne({ host: H[host]._id });
-        await VM.findByIdAndUpdate(freeVM.vm._id, {
-          task: task._id,
-          inUse: true,
-        });
-        await HostVM.findByIdAndDelete(freeVM._id);
-        await Requests.create({
-          host: H[host].ip,
-          reqtype: 'run_task',
-          args: `${vmName} ${taskCommandBuilder(freeVM.vm._id, task.command)}`,
-        });
-        await Task.findByIdAndUpdate(task._id, { taskScheduledAt: Date.now() });
-        console.log(
-          `Task ${task.command} assigned to Host ${host} at ip:${H[host].ip}`
-        );
+        if (freeVM != undefined) {
+          await Task.findByIdAndUpdate(task._id, { status: 'Pending' });
+          await VM.findByIdAndUpdate(freeVM.vm, {
+            task: task._id,
+            inUse: true,
+          });
+          const vm = await VM.findById(freeVM.vm);
+          const vmName = vm.name;
+          await HostVM.findByIdAndDelete(freeVM._id);
+          await Requests.create({
+            host: H[host].ip,
+            reqtype: 'run_task',
+            args: `${vmName} ${taskCommandBuilder(freeVM.vm, task.command)}`,
+          });
+          await Task.findByIdAndUpdate(task._id, {
+            taskScheduledAt: Date.now(),
+          });
+          console.log(
+            `Task ${task.command} assigned to Host ${host} at ip:${H[host].ip}`
+          );
+        }
       }
     }
     await delay(1000 * 5 * 60);
@@ -206,7 +220,7 @@ class ResultScheduler {
   }
   async cleanUpVMs() {
     var tasks = await Task.find({ status: 'Completed' });
-    for (let i = 0; i < tasks.length; i++) {
+    for (let i = 0; i < tasks.length; ++i) {
       var vm = await VM.find({ task: tasks[i]._id });
       var host = vm.host;
       await VM.findOneAndUpdate(

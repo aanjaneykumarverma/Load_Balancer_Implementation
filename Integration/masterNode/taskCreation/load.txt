@@ -3,8 +3,8 @@ low
 low
 low
 low
+low
 medium
 medium
-medium
-medium
+high
 high
