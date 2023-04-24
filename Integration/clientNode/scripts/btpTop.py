@@ -1,7 +1,5 @@
 import json
-import re
 import socket
-import os
 hostname = socket.gethostname()
 
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -21,7 +19,6 @@ def vm_specifications(data, pid):
         if line.find("libvirt+") != -1 and line.find("qemu-sy") != -1 and line.find(pid) != -1:
             i = line.split()
             return i[8], i[9]
-    
 
 
 def host_specifications(data):
