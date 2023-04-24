@@ -20,8 +20,8 @@ def vm_specifications(data, pid):
     for line in data:
         if line.find("libvirt+") != -1 and line.find("qemu-sy") != -1 and line.find(pid) != -1:
             i = line.split()
-            break
-    return i[8], i[9]
+            return i[8], i[9]
+    
 
 
 def host_specifications(data):
@@ -48,7 +48,8 @@ for i in vm_pid:
         pid_list.append(a[len(a)-2])
 
 for i in vm_names:
-    names.append(i)
+    names.append(i.rstrip('\n'))
+
 data = file_reader("./scripts/top.txt")
 final_dict = {}
 final_dict["VMS"] = []
@@ -60,10 +61,8 @@ for pid in range(len(pid_list)):
     vm_info["name"] = names[pid]
     vm_info['vm_cpu'] = float(vm_cpu)
     vm_info['vm_mem'] = float(vm_mem)
-    total_mem += float(vm_mem)  # total_mem ko max of vm_mem define kr dena bro. Add mat krna vm_mems ko
+    total_mem = max(total_mem, float(vm_mem))
     final_dict["VMS"].append(vm_info)
-
-
 cpu_data = file_reader("./scripts/cpu.txt")
 
 cpu_usage = float(cpu_data[0].split("%")[0])
