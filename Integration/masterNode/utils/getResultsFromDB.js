@@ -70,6 +70,11 @@ async function getResultsFromDB() {
       .then(() => console.log(`Record ${i + 1} written successfully.`))
       .catch((error) => console.error(error));
   }
+
+  csvWriter
+    .end()
+    .then(() => console.log('CSV file closed successfully'))
+    .catch((error) => console.error('Error closing CSV file:', error));
 }
 
 getResultsFromDB();
