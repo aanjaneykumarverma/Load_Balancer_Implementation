@@ -58,3 +58,6 @@ cpu.txt
 
 # notebook checkpoints
 .ipynb_checkpoints
+
+#Datastore
+.DS_Store
